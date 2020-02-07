@@ -16,20 +16,67 @@ class SearchTrainings extends Component {
 
     this.handleSelect = this.handleSelect.bind(this);
     this.onDateSelect = this.onDateSelect.bind(this);
+    this.performSearch = this.performSearch.bind(this);
 
     const today = moment();
 
     this.state = {
-      options: [{
-        value: 'dev_v3a',
-        label: '3.0 E1'  }, {
-        value: 'test_v3a',
-        label: '3.0 E2'
-      }],
+      technologyOptions: [],
+      //technologies: [],
       technology: null,
       daterange: moment.range(today.clone().subtract(0, "days"), today.clone())
     };
 
+    this.fetchTechnologies();
+  }
+
+  fetchTechnologies() {
+    const url = 'http://localhost:8080/mod/technology/all';
+    const {technologyOptions} = this.state;
+    fetch(url)
+    .then(res => res.json())
+    .then(
+      (result) => {
+          result.map(function(item) {
+            //technologies.push(item);
+            var option = {
+              label: item.name,
+              value: item.id
+            };
+            technologyOptions.push(option);
+          });
+      },
+    );
+  }
+
+  fetchTrainings(query) {
+    const url = 'http://localhost:8080/mod/trainsearch/mentor';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(query)
+    })
+    .then(res => res.json())
+    .then(
+      (result) => {
+          result.map(function(item) {
+            alert(JSON.stringify(item));
+          });
+      },
+    );
+  }
+
+  performSearch () {
+    const {technology, daterange} = this.state;
+    var query = {
+      technology: technology.value,
+      startdate: daterange.start,
+      enddate: daterange.end
+    };
+    this.fetchTrainings(query);
   }
 
   handleSelect = name => value => {
@@ -46,9 +93,8 @@ class SearchTrainings extends Component {
   componentDidUpdate() {
   }
 
-
   render() {
-    const {technology, options} = this.state;
+    const {technology, technologyOptions} = this.state;
 
     return (
       <div class="search-trainings-container">
@@ -60,7 +106,7 @@ class SearchTrainings extends Component {
     				isMulti={false}
     				autoFocus={false}
     				onChange={this.handleSelect('technology')}
-    				options={options}
+    				options={technologyOptions}
     				value={technology}
     				name="technology"
     				maxMenuHeight={200}
@@ -86,10 +132,16 @@ class SearchTrainings extends Component {
           </div>
         </div>
         <div class="search-button">
-          <button type="button" class="btn btn-info" style={{padding: '10px 70px'}}>Search</button>
+          <button
+            type="button"
+            class="btn btn-info"
+            style={{padding: '10px 70px'}}
+            onClick={this.performSearch}
+          >Search</button>
         </div>
       </div>
     );
   }
 }
+
 export default SearchTrainings;
