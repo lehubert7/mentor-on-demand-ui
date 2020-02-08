@@ -6,3 +6,7 @@
 input, button {
   margin-top: 5px;
 }
+
+.usertype-element {
+  max-width: 250px;
+}

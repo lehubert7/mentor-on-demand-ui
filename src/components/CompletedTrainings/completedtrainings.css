@@ -1,0 +1,14 @@
+.completed-trainings-container {
+  margin-top: 20px;
+}
+.completed-trainings-container table {
+  max-width: 1150px;
+  min-width: 1150px;
+}
+
+.completed-trainings-container table th, td {
+  border: 1px solid #d3d3d3;
+  padding-left: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}

@@ -1,0 +1,27 @@
+.current-trainings-container {
+  margin-top: 20px;
+}
+.current-trainings-container table {
+  max-width: 1150px;
+  min-width: 1150px;
+}
+
+.current-trainings-container table th, td {
+  border: 1px solid #d3d3d3;
+  padding-left: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.inprogress-trainings {
+  margin-top: 20px;
+}
+
+.confirmed-trainings {
+  margin-top: 30px;
+}
+
+.proposed-trainings {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}

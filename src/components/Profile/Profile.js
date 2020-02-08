@@ -2,65 +2,79 @@ import React, {Component} from 'react';
 import $ from 'jquery';
 import Header from '../Header/Header.js';
 import './profile.css';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 
 class Profile extends Component {
   constructor(props) {
     super(props);
-
-    this.handleClick = this.handleClick.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-
-
+    this.oldState = props.location.state;
     this.state = {
-      name: null,
-      email: null,
-      password: null
+      mentorInfo: {},
+      mentorSkills:[]
     };
+    this.fetchProfileInfo();
+    this.fetchSkillsInfo();
   }
 
-  handleClick(action) {
-  }
-
-  handleEmailChange (e) {
-    this.setState({email: e.target.value})
-  }
-
-  handleNameChange (e) {
-    this.setState({name: e.target.value})
-  }
-
-  handlePasswordChange (e) {
-    this.setState({password: e.target.value})
-  }
-
-  getEmailElement() {
-    return (
-      <input type="text" class="form-control"
-        placeholder="Email"
-        value={this.state.email}
-        onChange={this.handleEmailChange}/>
+  fetchProfileInfo() {
+    const {userid} = this.oldState;
+    var {mentorInfo} = this.state;
+    const url = 'http://localhost:8080/mod/profile/mentor/' + userid;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }})
+    .then(res => res.json())
+    .then(
+      (result) => {
+        this.state.mentorInfo = result;
+        this.setState({mentorInfo: result});
+      }
     );
   }
 
-  getPasswordElement() {
-    return (
-      <input type="text" class="form-control"
-        placeholder="Password"
-        value={this.state.password}
-        onChange={this.handlePasswordChange}/>
+  fetchSkillsInfo() {
+    const {userid} = this.oldState;
+    var {mentorSkills} = this.state;
+    const url = 'http://localhost:8080/mod/mentorskills/summary/' + userid;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }})
+    .then(res => res.json())
+    .then(
+      (result) => {
+        result.map(function(item) {
+          mentorSkills.push(item);
+        });
+        this.setState({mentorSkills: mentorSkills});
+      }
     );
   }
 
-  getSubmitElement(action) {
+  getSkillsTableBody() {
+    var rows = [];
+    const {mentorSkills} = this.state;
+
+    for (const [index, value] of mentorSkills.entries()) {
+      rows.push(
+        <tr>
+          <td>{value.technology}</td>
+          <td>{value.experience}</td>
+          <td>{value.noOfTrainings}</td>
+          <td>{value.fee}</td>
+        </tr>
+      );
+    }
     return (
-      <div class="submit-button">
-        <button type="button" class="btn btn-info"
-          style={{padding: '10px 70px'}}
-          onClick={() => this.handleClick(action)}>Submit</button>
-      </div>
+      <tbody>
+        {rows}
+      </tbody>
     );
   }
 
@@ -72,13 +86,67 @@ class Profile extends Component {
 
 
   render() {
+    const {mentorInfo} = this.state;
+    var skills = mentorInfo.skills + '';
+    skills = skills.replace(',',', ');
     return (
       <div class="profile-container">
         <Header/>
-        <div class="profile-details">
-          <h5>FName LName</h5>
-          <p>FName.LName@xyz.com
-          <br/>Location</p>
+        <div class="tabs-container">
+          <Tabs>
+            <TabList>
+              <Tab>Profile</Tab>
+            </TabList>
+
+            <TabPanel>
+              <div class="profile-details">
+                <table>
+                  <col width="200"/>
+                  <col width="500"/>
+                  <tbody>
+                    <tr>
+                      <td><small>Name</small></td>
+                      <td>{mentorInfo.name}</td>
+                    </tr>
+                    <tr>
+                      <td><small>Designation</small></td>
+                      <td>{mentorInfo.designation}</td>
+                    </tr>
+                    <tr>
+                      <td><small>Skills</small></td>
+                      <td>{skills}</td>
+                    </tr>
+                    <tr>
+                      <td><small>Email</small></td>
+                      <td>{mentorInfo.email}</td>
+                    </tr>
+                    <tr>
+                      <td><small>Location</small></td>
+                      <td>{mentorInfo.location}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="skill-summary">
+                  <h5>Experience</h5>
+                  <table>
+                    <col width="200"/>
+                    <col width="200"/>
+                    <col width="200"/>
+                    <col width="200"/>
+                    <thead>
+                      <tr>
+                        <th>Technology</th>
+                        <th>Experience</th>
+                        <th>No of Trainings delivered</th>
+                        <th>Fee charged</th>
+                      </tr>
+                    </thead>
+                    {this.getSkillsTableBody()}
+                  </table>
+                </div>
+              </div>
+            </TabPanel>
+          </Tabs>
         </div>
       </div>
     );
