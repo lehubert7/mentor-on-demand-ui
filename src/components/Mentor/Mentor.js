@@ -3,7 +3,8 @@ import $ from 'jquery';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Header from '../Header/Header.js';
-
+import CurrentTrainings from '../CurrentTrainings/CurrentTrainings.js';
+import CompletedTrainings from '../CompletedTrainings/CompletedTrainings.js';
 
 class Mentor extends Component {
   constructor(props) {
@@ -11,15 +12,11 @@ class Mentor extends Component {
 
   }
 
-
-
-
   componentDidMount() {
   }
 
   componentDidUpdate() {
   }
-
 
   render() {
     return (
@@ -35,16 +32,16 @@ class Mentor extends Component {
             </TabList>
 
             <TabPanel>
-              <h2>Current Trainings</h2>
+              <CurrentTrainings/>
             </TabPanel>
             <TabPanel>
-              <h2>Edit Skills</h2>
+              <h5>Edit Skills</h5>
             </TabPanel>
             <TabPanel>
-              <h2>Completed Trainings</h2>
+              <CompletedTrainings/>
             </TabPanel>
             <TabPanel>
-              <h2>Notifications</h2>
+              <h5>Notifications</h5>
             </TabPanel>
           </Tabs>
         </div>

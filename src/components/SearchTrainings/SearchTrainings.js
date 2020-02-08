@@ -94,6 +94,15 @@ class SearchTrainings extends Component {
     window.scrollBy(0, 700);
   }
 
+  getProposeElement() {
+    return (
+      <button
+        type="button"
+        class="btn btn-warning">Propose</button>
+    );
+
+  }
+
   getResultTableBody() {
     var rows = [];
     const {mentorInfos, technology, daterange} = this.state;
@@ -117,12 +126,13 @@ class SearchTrainings extends Component {
                   mentorInfo: null
                 }
               }}
-            >{value.name}</Link></td>
-
+            >{value.name}</Link>
+          </td>
           <td>{value.experience}</td>
           <td>{value.noOfTrainings}</td>
           <td>{value.fee}</td>
           <td>{value.technology}</td>
+          <td>{this.getProposeElement()}</td>
         </tr>
       );
     }
@@ -204,10 +214,11 @@ class SearchTrainings extends Component {
           <table>
             <col width="50"/>
             <col width="200"/>
+            <col width="120"/>
+            <col width="120"/>
+            <col width="120"/>
             <col width="200"/>
-            <col width="200"/>
-            <col width="200"/>
-            <col width="200"/>
+            <col width="100"/>
             <thead>
               <tr>
                 <th>S.No</th>
@@ -216,6 +227,7 @@ class SearchTrainings extends Component {
                 <th>No of Trainings delivered</th>
                 <th>Fee charged</th>
                 <th>Technology</th>
+                <th></th>
               </tr>
             </thead>
             {this.getResultTableBody()}
