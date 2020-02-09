@@ -5,22 +5,17 @@ import 'react-tabs/style/react-tabs.css';
 import Header from '../Header/Header.js';
 import SearchTrainings from '../SearchTrainings/SearchTrainings.js';
 
-
 class Anonymous extends Component {
   constructor(props) {
     super(props);
 
   }
 
-
-
-
   componentDidMount() {
   }
 
   componentDidUpdate() {
   }
-
 
   render() {
     return (

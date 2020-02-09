@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Header from '../Header/Header.js';
 import './profile.css';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-
+import {Constant} from '../../constants/AppConstants.js';
 
 class Profile extends Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class Profile extends Component {
   fetchProfileInfo() {
     const {userid} = this.oldState;
     var {mentorInfo} = this.state;
-    const url = 'http://localhost:8080/mod/profile/mentor/' + userid;
+    const url = Constant.BASE_URL + '/profile/mentor/' + userid;
     fetch(url, {
       method: 'GET',
       headers: {
@@ -39,7 +39,7 @@ class Profile extends Component {
   fetchSkillsInfo() {
     const {userid} = this.oldState;
     var {mentorSkills} = this.state;
-    const url = 'http://localhost:8080/mod/mentorskills/summary/' + userid;
+    const url = Constant.BASE_URL + '/mentorskills/summary/' + userid;
     fetch(url, {
       method: 'GET',
       headers: {
@@ -65,7 +65,7 @@ class Profile extends Component {
       rows.push(
         <tr>
           <td>{value.technology}</td>
-          <td>{value.experience}</td>
+          <td>{value.experience} years</td>
           <td>{value.noOfTrainings}</td>
           <td>{value.fee}</td>
         </tr>

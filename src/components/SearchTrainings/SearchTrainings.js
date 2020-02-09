@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import {connect} from 'react-redux';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import './searchTrainings.css';
@@ -9,6 +10,13 @@ import "react-daterange-picker/dist/css/react-calendar.css";
 import originalMoment from "moment";
 import { extendMoment } from "moment-range";
 import {Link} from "react-router-dom";
+import {Constant} from '../../constants/AppConstants.js';
+
+function mapStateToProps(state, props) {
+    return {
+      userId: state.userId
+    };
+}
 
 class SearchTrainings extends Component {
   constructor(props) {
@@ -17,6 +25,7 @@ class SearchTrainings extends Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.onDateSelect = this.onDateSelect.bind(this);
     this.performSearch = this.performSearch.bind(this);
+    this.proposeTraining = this.proposeTraining.bind(this);
 
     const moment = extendMoment(originalMoment);
     const today = moment();
@@ -25,14 +34,20 @@ class SearchTrainings extends Component {
       technologyOptions: [],
       technology: null,
       mentorInfos: [],
-      daterange: moment.range(today.clone().subtract(0, "days"), today.clone())
+      trainingData: {},
+      disablePropose: false,
+      daterange: moment.range(today.clone().add(1, "days"), today.clone().add(1, "days"))
     };
+
+    if(!this.props.userId) {
+      this.state.disablePropose = true;
+    }
 
     this.fetchTechnologies();
   }
 
   fetchTechnologies() {
-    const url = 'http://localhost:8080/mod/technology/all';
+    const url = Constant.BASE_URL + '/technology/all';
     const {technologyOptions} = this.state;
     fetch(url, {
       method: 'GET',
@@ -52,12 +67,10 @@ class SearchTrainings extends Component {
         });
       }
     );
-
-
   }
 
   fetchTrainings(query) {
-    const url = 'http://localhost:8080/mod/trainsearch/mentor';
+    const url = Constant.BASE_URL + '/trainsearch/mentor';
     const {mentorInfos} = this.state;
     fetch(url, {
       method: 'POST',
@@ -84,23 +97,73 @@ class SearchTrainings extends Component {
       //alert("Technology field is empty. Please select Technology from dropdown..");
       return;
     }
+
     var query = {
       technology: technology.value,
       startdate: daterange.start,
-      enddate: daterange.end
+      enddate: daterange.end,
+      scholar: this.props.userId
     };
     this.state.mentorInfos = [];
     this.fetchTrainings(query);
     window.scrollBy(0, 700);
   }
 
-  getProposeElement() {
-    return (
-      <button
-        type="button"
-        class="btn btn-warning">Propose</button>
-    );
+  getProposeElement(proposed, id) {
+    const {mentorInfos, disablePropose} = this.state;
+    if(proposed) {
+      return (<p>Proposed</p>);
+    } else {
+      return (
+        <button
+          type="button"
+          class="btn btn-warning"
+          disabled={disablePropose}
+          id={id}
+          onClick={(e) => this.proposeTraining(e, id)}>Propose</button>
+      );
+    }
+  }
 
+  proposeTraining(e, id) {
+    const {mentorInfos, technology, daterange, trainingData} = this.state;
+    var startdate = daterange.start.toDate();
+    var enddate = daterange.end.toDate();
+    for(const [index, value] of mentorInfos.entries()) {
+      if(value.id == id) {
+        trainingData.scholarId = this.props.userId;
+        trainingData.mentorId = value.mentor;
+        trainingData.technologyId = technology.value;
+        trainingData.startdate = startdate;
+        trainingData.enddate = enddate;
+        this.postTrainingRequest();
+      }
+    }
+  }
+
+  postTrainingRequest() {
+    const {trainingData, mentorInfos} = this.state;
+    alert(JSON.stringify(trainingData));
+    const url = Constant.BASE_URL + '/training/add';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(trainingData)
+    })
+    .then(res => res.json())
+    .then(
+      (result) => {
+        for(const [index, value] of mentorInfos.entries()) {
+          if(value.mentor == trainingData.mentorId) {
+            value.proposed = true;
+          }
+        }
+        this.setState({mentorInfos: mentorInfos});
+      }
+    );
   }
 
   getResultTableBody() {
@@ -113,7 +176,7 @@ class SearchTrainings extends Component {
       var sNo = index + 1;
       rows.push(
         <tr>
-          <td><font color="black">{sNo}</font></td>
+          <td>{sNo}</td>
           <td>
             <Link
               to={{
@@ -132,7 +195,7 @@ class SearchTrainings extends Component {
           <td>{value.noOfTrainings}</td>
           <td>{value.fee}</td>
           <td>{value.technology}</td>
-          <td>{this.getProposeElement()}</td>
+          <td>{this.getProposeElement(value.proposed, value.id)}</td>
         </tr>
       );
     }
@@ -227,7 +290,7 @@ class SearchTrainings extends Component {
                 <th>No of Trainings delivered</th>
                 <th>Fee charged</th>
                 <th>Technology</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             {this.getResultTableBody()}
@@ -238,4 +301,4 @@ class SearchTrainings extends Component {
   }
 }
 
-export default SearchTrainings;
+export default connect(mapStateToProps)(SearchTrainings);

@@ -1,16 +1,30 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import {connect} from 'react-redux';
+import {setUserId} from '../../store/action.js';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Header from '../Header/Header.js';
 import './login.css';
 import { Redirect } from 'react-router'
 import Select from 'react-select';
+import {Constant} from '../../constants/AppConstants.js';
+
+function mapStateToProps(state, props) {
+    return {
+      userId: state.userId
+    };
+}
+
+const mapDispatchToProps = dispatch => ({
+  setUserId: userId => {
+    dispatch(setUserId(userId));
+  },
+});
 
 class Login extends Component {
   constructor(props) {
     super(props);
-
     this.handleClick = this.handleClick.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
@@ -28,17 +42,7 @@ class Login extends Component {
         flag: false,
         path: ''
       },
-      userTypes: [{
-        label: 'Scholar',
-        value: 'SCHOLAR'
-      }, {
-        label: 'Mentor',
-        value: 'MENTOR'
-      }],
-      userType: {
-        label: 'Scholar',
-        value: 'SCHOLAR'
-      }
+      userType: Constant.USER_TYPES[0]
     };
   }
 
@@ -55,7 +59,7 @@ class Login extends Component {
   }
 
   validateUser() {
-    const url = 'http://localhost:8080/mod/login/login';
+    const url = Constant.BASE_URL + '/login/login';
     const {email, password, userInfo} = this.state;
     var query = {
       email: email,
@@ -83,7 +87,7 @@ class Login extends Component {
   }
 
   registerUser() {
-    const url = 'http://localhost:8080/mod/login/register';
+    const url = Constant.BASE_URL + '/login/register';
     const {name, email, password, location, userType, userInfo} = this.state;
     var query = {
       name: name,
@@ -115,6 +119,8 @@ class Login extends Component {
 
   routeUser() {
     const {userInfo, redirect} = this.state;
+    this.props.setUserId(userInfo.id);
+
     if(userInfo) {
       if(userInfo.usertype == 'SCHOLAR') {
         redirect.flag = true;
@@ -178,7 +184,7 @@ class Login extends Component {
 
   getPasswordElement() {
     return (
-      <input type="text" class="form-control"
+      <input type="password" class="form-control"
         placeholder="Password"
         value={this.state.password}
         onChange={this.handlePasswordChange}/>
@@ -234,7 +240,7 @@ class Login extends Component {
                     isMulti={false}
                     autoFocus={false}
                     onChange={this.handleSelect('userType')}
-                    options={this.state.userTypes}
+                    options={Constant.USER_TYPES}
                     value={this.state.userType}
                     name="userType"
                     maxMenuHeight={200}
@@ -259,4 +265,4 @@ class Login extends Component {
     );
   }
 }
-export default Login;
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

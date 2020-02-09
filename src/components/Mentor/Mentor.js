@@ -1,15 +1,32 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import {connect} from 'react-redux';
+import { Redirect } from 'react-router'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Header from '../Header/Header.js';
 import CurrentTrainings from '../CurrentTrainings/CurrentTrainings.js';
 import CompletedTrainings from '../CompletedTrainings/CompletedTrainings.js';
 
+function mapStateToProps(state, props) {
+    return {
+      userId: state.userId
+    };
+}
+
 class Mentor extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      redirect: {
+        flag: false,
+        path: '/login'
+      }
+    };
+    if(!this.props.userId) {
+      this.state.redirect.flag = true;
+    }
   }
 
   componentDidMount() {
@@ -19,6 +36,10 @@ class Mentor extends Component {
   }
 
   render() {
+    const {redirect} = this.state;
+    if(redirect.flag) {
+      return (<Redirect to={redirect.path}/>);
+    }
     return (
       <div class="mentor-container">
         <Header/>
@@ -49,4 +70,4 @@ class Mentor extends Component {
     );
   }
 }
-export default Mentor;
+export default connect(mapStateToProps)(Mentor);
