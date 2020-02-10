@@ -7,6 +7,7 @@ import 'react-tabs/style/react-tabs.css';
 import Header from '../Header/Header.js';
 import CurrentTrainings from '../CurrentTrainings/CurrentTrainings.js';
 import CompletedTrainings from '../CompletedTrainings/CompletedTrainings.js';
+import EditSkills from '../EditSkills/EditSkills.js';
 
 function mapStateToProps(state, props) {
     return {
@@ -56,7 +57,7 @@ class Mentor extends Component {
               <CurrentTrainings/>
             </TabPanel>
             <TabPanel>
-              <h5>Edit Skills</h5>
+              <EditSkills/>
             </TabPanel>
             <TabPanel>
               <CompletedTrainings/>

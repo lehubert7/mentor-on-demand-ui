@@ -12,3 +12,7 @@
   padding-top: 2px;
   padding-bottom: 2px;
 }
+
+.completed-trainings-container table th {
+  color: #50c878;
+}

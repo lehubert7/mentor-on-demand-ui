@@ -11,6 +11,7 @@ export const Constant = {
   SET_USERID: "SET_USERID",
   SCHOLAR: 'SCHOLAR',
   MENTOR: 'MENTOR',
+  ADMIN: 'ADMIN',
   INPROGRESS: 'inprogress',
   PROPOSED: 'proposed',
   CONFIRMED: 'confirmed',

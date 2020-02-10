@@ -14,6 +14,10 @@
   padding-bottom: 2px;
 }
 
+.current-trainings-container table th {
+  color: #50c878;
+}
+
 .inprogress-trainings {
   margin-top: 20px;
 }

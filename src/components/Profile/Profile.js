@@ -1,9 +1,17 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
+import {connect} from 'react-redux';
 import Header from '../Header/Header.js';
 import './profile.css';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import {Constant} from '../../constants/AppConstants.js';
+import {Link} from "react-router-dom";
+
+function mapStateToProps(state, props) {
+    return {
+      userId: state.userId
+    };
+}
 
 class Profile extends Component {
   constructor(props) {
@@ -11,10 +19,51 @@ class Profile extends Component {
     this.oldState = props.location.state;
     this.state = {
       mentorInfo: {},
-      mentorSkills:[]
+      mentorSkills:[],
+      back: {
+        path: ''
+      },
+      userInfo: {},
+      userId: this.props.userId
     };
+    this.getUserInfo();
     this.fetchProfileInfo();
     this.fetchSkillsInfo();
+  }
+
+  getUserInfo() {
+    const {userId} = this.state;
+    var {userInfo, back} = this.state;
+
+    const url = Constant.BASE_URL + '/login/userinfo/' + userId;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }})
+    .then(res => res.json())
+    .then(
+      (result) => {
+        this.state.userInfo = result;
+        userInfo = result;
+        if(userInfo) {
+          if(userInfo.usertype == Constant.SCHOLAR) {
+            back.path = '/scholar';
+          } else if(userInfo.usertype == Constant.MENTOR) {
+            back.path = '/mentor';
+          } else if(userInfo.usertype == Constant.ADMIN) {
+            back.path = '/admin';
+          } else {
+            back.path = '/';
+          }
+        } else {
+          back.path = '/';
+        }
+        this.setState({userInfo: result});
+        this.setState({back: back});
+      }
+    );
   }
 
   fetchProfileInfo() {
@@ -86,9 +135,15 @@ class Profile extends Component {
 
 
   render() {
-    const {mentorInfo} = this.state;
+    const {mentorInfo, back, userInfo} = this.state;
     var skills = mentorInfo.skills + '';
     skills = skills.replace(',',', ');
+
+    var email = '*******@***.com';
+    if(userInfo && userInfo.usertype == Constant.ADMIN) {
+      email = mentorInfo.email
+    }
+
     return (
       <div class="profile-container">
         <Header/>
@@ -118,7 +173,7 @@ class Profile extends Component {
                     </tr>
                     <tr>
                       <td><small>Email</small></td>
-                      <td>{mentorInfo.email}</td>
+                      <td>{email}</td>
                     </tr>
                     <tr>
                       <td><small>Location</small></td>
@@ -148,8 +203,15 @@ class Profile extends Component {
             </TabPanel>
           </Tabs>
         </div>
+        <div class="back-button">
+          <Link to={back.path}>
+            <button type="button" class="btn btn-info"
+              style={{padding: '10px 70px'}}
+              >Back</button>
+          </Link>
+        </div>
       </div>
     );
   }
 }
-export default Profile;
+export default connect(mapStateToProps)(Profile);

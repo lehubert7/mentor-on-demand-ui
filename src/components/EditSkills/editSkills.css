@@ -1,0 +1,41 @@
+.edit-skills-container {
+  margin-top: 20px;
+}
+
+.add-skill {
+  margin-top: 30px;
+}
+.edit-skills {
+  margin-top: 30px;
+}
+
+.edit-skills table {
+  max-width: 700px;
+  min-width: 700px;
+}
+
+.technology-input {
+  max-width: 500px;
+  min-width: 500px;
+  width: 500px;
+}
+
+.edit-skills table th, td {
+  border: 1px solid #d3d3d3;
+  padding-left: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.edit-skills table th {
+  color: #50c878;
+}
+
+.edit-skills button {
+  padding: 7px 50px;
+  margin-left: 30px;
+}
+
+.save-button {
+  margin-bottom: 30px;
+}
